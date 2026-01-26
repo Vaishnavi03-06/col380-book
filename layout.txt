@@ -1,0 +1,21 @@
+pp-book/
+  main.tex
+  Makefile
+  ppbook.cls
+  styles/
+    ppbook.sty
+    ppboxes.sty
+    ppcodelistings.sty
+  frontmatter/
+    titlepage.tex
+    copyright.tex
+    preface.tex
+    notation.tex
+  chapters/
+    ch01-intro.tex
+    ch02-models.tex
+  backmatter/
+    bibliography.bib
+    appendix-a.tex
+  figures/
+    (your images)

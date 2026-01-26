@@ -1,0 +1,29 @@
+% main.tex
+\documentclass{ppbook}
+
+% Optional: bibliography
+\usepackage[numbers]{natbib}
+
+\begin{document}
+
+\frontmatter
+\input{frontmatter/titlepage}
+\input{frontmatter/copyright}
+\tableofcontents
+\input{frontmatter/preface}
+\input{frontmatter/notation}
+
+\mainmatter
+\input{chapters/ch01}
+\input{chapters/ch02}
+
+\backmatter
+\bibliographystyle{plainnat}
+\bibliography{backmatter/bibliography}
+
+\appendix
+\input{backmatter/appendix-a}
+
+\printindex
+
+\end{document}
