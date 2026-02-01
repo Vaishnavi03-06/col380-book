@@ -1,0 +1,119 @@
+\chapter{OpenMP: Scheduling, Reductions, Tasks, and Performance}
+\label{chap:openmp}
+
+\section{Introduction}
+This lecture concludes our discussion of OpenMP. We have covered the basics in detail, and now focus on advanced constructs: scheduling strategies, reductions, task-based parallelism, and performance optimization. While OpenMP provides abstractions, fine-grained control is limited, and programmers must experiment to achieve optimal results.
+
+\section{Scheduling Strategies}
+OpenMP allows programmers to specify how loop iterations are distributed among threads.
+
+\subsection{Static Scheduling}
+\begin{itemize}
+  \item Iterations are divided into fixed-size chunks before execution.
+  \item Each chunk is assigned to a thread in round-robin fashion.
+  \item Example: with $n$ threads, chunk $i$ goes to thread $(i \bmod n)$.
+  \item Best suited for uniform workloads.
+\end{itemize}
+
+\subsection{Dynamic Scheduling}
+\begin{itemize}
+  \item Iterations are assigned at runtime as threads request work.
+  \item Threads receive a chunk, complete it, then request another.
+  \item Useful when workload per iteration is irregular.
+\end{itemize}
+
+\subsection{Guided Scheduling}
+\begin{itemize}
+  \item Starts with large chunks, then decreases chunk size as execution progresses.
+  \item Provides adaptive load balancing.
+  \item Left as a reading exercise for experimentation.
+\end{itemize}
+
+\section{Reductions}
+Reductions combine partial results from multiple threads into a single result.
+
+\subsection{Motivation}
+\begin{itemize}
+  \item Each thread computes a local partial result.
+  \item These must be combined into a global result.
+  \item Without reductions, explicit synchronization (atomic/critical) is required.
+\end{itemize}
+
+\subsection{Syntax}
+\begin{lstlisting}[language=C, caption={Reduction over sum}]
+#pragma omp parallel for reduction(+:sum)
+for (int i = 0; i < N; i++) {
+    sum += A[i];
+}
+\end{lstlisting}
+
+\subsection{Supported Operators}
+\begin{itemize}
+  \item Arithmetic: +, *, -, /
+  \item Logical: &&, ||
+  \item Bitwise: &, |, ^
+\end{itemize}
+
+\subsection{Advantages}
+\begin{itemize}
+  \item Automatic handling of synchronization.
+  \item Cleaner code compared to manual atomic/critical sections.
+\end{itemize}
+
+\section{Task-Based Parallelism and Sections}
+OpenMP supports both data-parallel and task-parallel constructs.
+
+\subsection{Tasks}
+\begin{itemize}
+  \item Represent independent units of work with dependencies.
+  \item Enable MIMD-style parallelism.
+\end{itemize}
+
+\subsection{Sections}
+\begin{lstlisting}[language=C, caption={Sections construct}]
+#pragma omp parallel sections
+{
+  #pragma omp section
+  computeA();
+
+  #pragma omp section
+  computeB();
+
+  #pragma omp section
+  computeC();
+}
+\end{lstlisting}
+
+\begin{itemize}
+  \item Each section is executed once, typically by one thread.
+  \item Implicit barrier at the end ensures synchronization.
+  \item Useful for dividing heterogeneous tasks among threads.
+\end{itemize}
+
+\section{Performance Considerations}
+Parallelism introduces overheads. Programmers must balance workload and thread management.
+
+\subsection{Overheads}
+\begin{itemize}
+  \item Thread creation and destruction.
+  \item Context switching.
+  \item Synchronization barriers.
+\end{itemize}
+
+\subsection{Guidelines}
+\begin{itemize}
+  \item Ensure sufficient iteration space (10,000–200,000 iterations) to mask overheads.
+  \item Choose scheduling strategy based on workload uniformity.
+  \item Experiment with chunk sizes and thread counts.
+\end{itemize}
+
+\subsection{Optimizations}
+\begin{itemize}
+  \item \textbf{SIMD Vectorization}: Use \verb|#pragma omp simd| to exploit intra-core parallelism.
+  \item \textbf{Loop Collapsing}: Combine nested loops into a single loop to increase iteration space.
+  \item \textbf{Loop Unrolling}: Reduce loop overhead by expanding iterations.
+  \item \textbf{Avoid Locks}: Locks in loops add significant overhead.
+\end{itemize}
+
+\section{Conclusion}
+OpenMP provides powerful abstractions for parallel programming. By understanding scheduling strategies, reductions, tasks, and performance trade-offs, programmers can design efficient parallel applications. 

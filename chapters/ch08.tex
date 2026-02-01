@@ -1,0 +1,58 @@
+\chapter{Memory Consistency Models}
+\label{chap:memory-consistency}
+
+\section{Introduction}
+This lecture introduces memory consistency models in parallel programming. When multiple threads access shared memory, the order in which reads and writes become visible is critical for correctness. OpenMP and other parallel frameworks rely on well‑defined consistency rules to avoid subtle bugs.
+
+\section{Sequential Consistency}
+\begin{itemize}
+  \item Defined by Lamport: the result of execution is as if all operations were executed in some sequential order.
+  \item Each thread’s operations appear in program order.
+  \item Provides intuitive semantics but can be expensive to enforce.
+\end{itemize}
+
+\section{Relaxed Consistency Models}
+Modern architectures often relax strict sequential consistency for performance.
+\begin{itemize}
+  \item \textbf{Processor consistency}: writes by a single processor appear in order, but interleaving across processors may vary.
+  \item \textbf{Weak consistency}: synchronization points define when memory must be consistent.
+  \item \textbf{Release consistency}: distinguishes between acquire and release operations to optimize synchronization.
+\end{itemize}
+
+\section{OpenMP and Memory Consistency}
+\begin{itemize}
+  \item OpenMP assumes a relaxed consistency model but provides constructs to enforce ordering.
+  \item \verb|#pragma omp barrier| ensures all threads reach a point before proceeding.
+  \item \verb|#pragma omp flush| forces memory updates to be visible across threads.
+  \item Atomic and critical sections guarantee indivisible updates.
+\end{itemize}
+
+\section{Examples}
+\subsection{Barrier Synchronization}
+\begin{lstlisting}[language=C, caption={Barrier example}]
+#pragma omp parallel
+{
+    compute();
+    #pragma omp barrier
+    update_shared();
+}
+\end{lstlisting}
+
+\subsection{Flush Operation}
+\begin{lstlisting}[language=C, caption={Flush example}]
+#pragma omp parallel
+{
+    #pragma omp flush(shared_var)
+    use(shared_var);
+}
+\end{lstlisting}
+
+\section{Performance Implications}
+\begin{itemize}
+  \item Strict consistency can reduce performance due to frequent synchronization.
+  \item Relaxed models allow reordering and caching optimizations.
+  \item Programmers must balance correctness and efficiency by carefully placing barriers and flushes.
+\end{itemize}
+
+\section{Conclusion}
+Memory consistency models define how threads observe shared memory operations. Sequential consistency is intuitive but costly, while relaxed models improve performance at the expense of complexity. OpenMP provides synchronization constructs to help programmers enforce correctness where needed.
